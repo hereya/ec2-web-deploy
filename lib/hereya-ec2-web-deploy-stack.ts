@@ -18,6 +18,7 @@ export class HereyaEc2WebDeployStack extends cdk.Stack {
       process.env["hereyaProjectEnv"] ?? ("{}" as string)
     );
     appEnv.NODE_ENV = "production";
+    const appEnvString = JSON.stringify(appEnv);
 
     const vpcId: string | undefined = process.env["vpcId"];
     const distFolder: string = process.env["distFolder"] ?? "dist";
@@ -138,7 +139,7 @@ export class HereyaEc2WebDeployStack extends cdk.Stack {
       // Start the app with PM2 on port 3000
 
       // create ecosystem file for pm2 without watching the dist folder with env variables from appEnv
-      'echo \'{"apps":[{"name":"express-app","script":"/home/ubuntu/app/dist/index.js","cwd":"/home/ubuntu/app/dist","env":${JSON.stringify(appEnv)}}]\' > /home/ubuntu/app/ecosystem.json',
+      `echo '{"apps":[{"name":"express-app","script":"/home/ubuntu/app/dist/index.js","cwd":"/home/ubuntu/app/dist","env":${appEnvString}}]' > /home/ubuntu/app/ecosystem.json`,
 
       // start the app with pm2 and ecosystem file
       "sudo -u ubuntu bash -c 'pm2 start /home/ubuntu/app/ecosystem.json'",
