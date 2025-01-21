@@ -3,7 +3,7 @@
 A Hereya package for deploying a node js web application or service to EC2 (Auto Scaling Group).
 
 This package requires a custom domain in a Route 53 zone to correctly configure HTTPS.
-By default, your app is supposed to be running on port 3000. You can change it with the parameter `appPort`.
+By default, your app is supposed to be running on PORT environment variable value. You can change it with the parameter `appPort`.
 You can customize the instance type through the parameter `instanceType`.
 
 ## Usage

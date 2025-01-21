@@ -17,7 +17,9 @@ export class HereyaEc2WebDeployStack extends cdk.Stack {
     const appEnv = JSON.parse(
       process.env["hereyaProjectEnv"] ?? ("{}" as string)
     );
+    const appPort = "3000";
     appEnv.NODE_ENV = "production";
+    appEnv.PORT = appPort;
     const appEnvString = JSON.stringify(appEnv);
 
     const vpcId: string | undefined = process.env["vpcId"];
@@ -28,7 +30,6 @@ export class HereyaEc2WebDeployStack extends cdk.Stack {
     if (!hereyaProjectRootDir) {
       throw new Error("hereyaProjectRootDir context variable is required");
     }
-    const appPort: string = process.env["appPort"] ?? "3000";
 
     const instanceType: string = process.env["instanceType"] ?? "t3.nano";
 
