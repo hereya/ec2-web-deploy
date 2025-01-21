@@ -134,7 +134,7 @@ export class HereyaEc2WebDeployStack extends cdk.Stack {
       "unzip dist.zip", // unzips into /home/ubuntu/app/dist (assuming structure)
       "chown -R ubuntu:ubuntu /home/ubuntu/app",
       "cd dist",
-      "sudo -u ubuntu bash -c 'npm install'", // installs dependencies from package.json
+      "sudo -u ubuntu bash -c 'npm install --omit=dev'", // installs dependencies from package.json
       //"sudo -u ubuntu bash -c 'npx puppeteer browsers install chrome'",
       // Start the app with PM2 on port 3000
 
