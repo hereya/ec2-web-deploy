@@ -13,6 +13,12 @@ import path = require("path");
 export class HereyaEc2WebDeployStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    const appEnv = JSON.parse(
+      process.env["hereyaProjectEnv"] ?? ("{}" as string)
+    );
+    appEnv.NODE_ENV = "production";
+
     const vpcId: string | undefined = process.env["vpcId"];
     const distFolder: string = process.env["distFolder"] ?? "dist";
     const hereyaProjectRootDir: string = process.env[
@@ -43,8 +49,8 @@ export class HereyaEc2WebDeployStack extends cdk.Stack {
       domainZone = customDomain.split(".").slice(1).join(".");
     }
 
-     // 2) Hosted Zone lookup
-     const hostedZone = route53.HostedZone.fromLookup(this, "HostedZone", {
+    // 2) Hosted Zone lookup
+    const hostedZone = route53.HostedZone.fromLookup(this, "HostedZone", {
       domainName: domainZone,
     });
 
@@ -130,7 +136,12 @@ export class HereyaEc2WebDeployStack extends cdk.Stack {
       "sudo -u ubuntu bash -c 'npm install'", // installs dependencies from package.json
       //"sudo -u ubuntu bash -c 'npx puppeteer browsers install chrome'",
       // Start the app with PM2 on port 3000
-      "sudo -u ubuntu bash -c 'pm2 start /home/ubuntu/app/dist/index.js --name express-app --watch'",
+
+      // create ecosystem file for pm2 without watching the dist folder with env variables from appEnv
+      'echo \'{"apps":[{"name":"express-app","script":"/home/ubuntu/app/dist/index.js","cwd":"/home/ubuntu/app/dist","env":${JSON.stringify(appEnv)}}]\' > /home/ubuntu/app/ecosystem.json',
+
+      // start the app with pm2 and ecosystem file
+      "sudo -u ubuntu bash -c 'pm2 start /home/ubuntu/app/ecosystem.json'",
 
       // PM2 auto-start on reboot
       "pm2 startup systemd -u ubuntu --hp /home/ubuntu",
