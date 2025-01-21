@@ -23,6 +23,8 @@ export class HereyaEc2WebDeployStack extends cdk.Stack {
     }
     const appPort: string = process.env["appPort"] ?? "3000";
 
+    const instanceType: string = process.env["instanceType"] ?? "t3.nano";
+
     // Look up the VPC using the parameter value
     const vpc = vpcId
       ? Vpc.fromLookup(this, "MyVpc", {
@@ -65,13 +67,15 @@ export class HereyaEc2WebDeployStack extends cdk.Stack {
       path: path.join(hereyaProjectRootDir, distFolder, "dist.zip"), // local path to your zipped code
     });
 
+    const [instanceClass, instanceSize] = instanceType.split(".");
+
     // 3) Create an Auto Scaling Group
     const asg = new autoscaling.AutoScalingGroup(this, "MyAsg", {
       vpc,
       securityGroup: sg,
       instanceType: ec2.InstanceType.of(
-        ec2.InstanceClass.T3,
-        ec2.InstanceSize.MICRO
+        instanceClass as ec2.InstanceClass,
+        instanceSize as ec2.InstanceSize
       ),
       machineImage: ec2.MachineImage.lookup({
         name: "ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-*",
