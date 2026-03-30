@@ -100,6 +100,11 @@ export class HereyaEc2WebDeployStack extends cdk.Stack {
     // The instances need permission to read from the S3 asset bucket:
     appAsset.grantRead(asg.role);
 
+    // Enable SSM Session Manager access
+    asg.role.addManagedPolicy(
+      ec2.ManagedPolicy.fromAwsManagedPolicyName("AmazonSSMManagedInstanceCore"),
+    );
+
     // 4) Define User Data to install Node, PM2, and run the app
     //    We'll reference 'PORT=3000' internally, then ALB listens on 80 externally.
     asg.addUserData(
