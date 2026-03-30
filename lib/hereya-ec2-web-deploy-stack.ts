@@ -107,6 +107,22 @@ export class HereyaEc2WebDeployStack extends cdk.Stack {
       iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonSSMManagedInstanceCore"),
     );
 
+    // Attach IAM policies from iamPolicy-prefixed env vars
+    for (const [key, value] of Object.entries(appEnv)) {
+      if (key.startsWith("iamPolicy") && typeof value === "string") {
+        try {
+          const policyDoc = JSON.parse(value);
+          asg.role.attachInlinePolicy(
+            new iam.Policy(this, `Policy-${key}`, {
+              document: iam.PolicyDocument.fromJson(policyDoc),
+            }),
+          );
+        } catch (e) {
+          console.warn(`Failed to parse IAM policy from ${key}:`, e);
+        }
+      }
+    }
+
     // 4) Define User Data to install Node, PM2, and run the app
     //    We'll reference 'PORT=3000' internally, then ALB listens on 80 externally.
     asg.addUserData(
