@@ -8,6 +8,7 @@ import * as elbv2 from "aws-cdk-lib/aws-elasticloadbalancingv2";
 import * as acm from "aws-cdk-lib/aws-certificatemanager";
 import * as route53 from "aws-cdk-lib/aws-route53";
 import * as targets from "aws-cdk-lib/aws-route53-targets";
+import * as iam from "aws-cdk-lib/aws-iam";
 import path = require("path");
 
 export class HereyaEc2WebDeployStack extends cdk.Stack {
@@ -101,8 +102,9 @@ export class HereyaEc2WebDeployStack extends cdk.Stack {
     appAsset.grantRead(asg.role);
 
     // Enable SSM Session Manager access
+    // Enable SSM Session Manager access
     asg.role.addManagedPolicy(
-      ec2.ManagedPolicy.fromAwsManagedPolicyName("AmazonSSMManagedInstanceCore"),
+      iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonSSMManagedInstanceCore"),
     );
 
     // 4) Define User Data to install Node, PM2, and run the app
