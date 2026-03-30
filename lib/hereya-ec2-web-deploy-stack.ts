@@ -134,15 +134,14 @@ export class HereyaEc2WebDeployStack extends cdk.Stack {
     // Continue with user data
     asg.addUserData(
       "cd /home/ubuntu/app",
-      "unzip dist.zip", // unzips into /home/ubuntu/app/dist (assuming structure)
+      "unzip -o dist.zip", // extracts files directly into /home/ubuntu/app/
       "chown -R ubuntu:ubuntu /home/ubuntu/app",
-      "cd dist",
-      "sudo -u ubuntu bash -c 'npm install --omit=dev'", // installs dependencies from package.json
+      "sudo -u ubuntu bash -c 'cd /home/ubuntu/app && npm install --omit=dev'",
       //"sudo -u ubuntu bash -c 'npx puppeteer browsers install chrome'",
       // Start the app with PM2 on port 3000
 
-      // create ecosystem file for pm2 without watching the dist folder with env variables from appEnv
-      `echo '{"apps":[{"name":"express-app","script":"/home/ubuntu/app/dist/index.js","cwd":"/home/ubuntu/app/dist","env":${appEnvString}}]}' > /home/ubuntu/app/ecosystem.json`,
+      // create ecosystem file for pm2 with env variables from appEnv
+      `echo '{"apps":[{"name":"express-app","script":"/home/ubuntu/app/index.js","cwd":"/home/ubuntu/app","env":${appEnvString}}]}' > /home/ubuntu/app/ecosystem.json`,
 
       // start the app with pm2 and ecosystem file
       "sudo -u ubuntu bash -c 'pm2 start /home/ubuntu/app/ecosystem.json'",
