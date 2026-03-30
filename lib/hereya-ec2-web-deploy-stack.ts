@@ -80,6 +80,8 @@ export class HereyaEc2WebDeployStack extends cdk.Stack {
     // 3) Create an Auto Scaling Group
     const asg = new autoscaling.AutoScalingGroup(this, "MyAsg", {
       vpc,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+      associatePublicIpAddress: true,
       securityGroup: sg,
       instanceType: ec2.InstanceType.of(
         instanceClass as ec2.InstanceClass,
