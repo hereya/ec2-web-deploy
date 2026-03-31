@@ -18,6 +18,16 @@ export class HereyaEc2WebDeployStack extends cdk.Stack {
     const appEnv = JSON.parse(
       process.env["hereyaProjectEnv"] ?? ("{}" as string)
     );
+    // Strip hereya infra prefixes (e.g. "aws:value" -> "value")
+    // Only strip short prefixes (2-10 chars) that aren't URL schemes like "https:"
+    for (const [key, value] of Object.entries(appEnv)) {
+      if (typeof value === "string") {
+        const match = value.match(/^([a-z]{2,10}):(.*)/s);
+        if (match && !["http", "https", "ftp", "ftps", "file"].includes(match[1])) {
+          appEnv[key] = match[2];
+        }
+      }
+    }
     const appPort = "3000";
     appEnv.NODE_ENV = "production";
     appEnv.PORT = appPort;

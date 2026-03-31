@@ -1,5 +1,5 @@
 name: hereya/ec2-web-deploy
-version: 0.1.5
+version: 0.1.6
 description: "Deploys a Node.js web application to AWS EC2 with Auto Scaling Group, Application Load Balancer, HTTPS via ACM, and custom domain via Route 53."
 visibility: public
 infra: aws
