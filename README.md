@@ -6,7 +6,7 @@ Deploy a Node.js web application to AWS EC2 with automatic load balancing, HTTPS
 
 This package provisions a production-ready infrastructure stack for your Node.js app:
 
-- **EC2 Auto Scaling Group** (1-2 instances) running Ubuntu 22.04 with Node.js 20
+- **EC2 Auto Scaling Group** (1-2 instances) running Ubuntu 22.04 with Node.js 20 (configurable with `nodeVersion`)
 - **Application Load Balancer** with automatic HTTP to HTTPS redirect
 - **ACM certificate** with DNS validation for your custom domain
 - **Route 53 DNS record** pointing your domain to the load balancer
@@ -31,6 +31,7 @@ hereya add hereya/ec2-web-deploy -p customDomain="app.example.com"
 |-----------|----------|---------|-------------|
 | `customDomain` | Yes | - | The domain for your app (e.g. `app.example.com`). Must be in a Route 53 hosted zone. |
 | `instanceType` | No | `t3.nano` | EC2 instance type (e.g. `t3.micro`, `t3.small`). |
+| `nodeVersion` | No | `20` | Node.js major version installed from NodeSource (`setup_<nodeVersion>.x`), e.g. `22`. Digits only. Changing it replaces the instances. |
 | `distFolder` | No | `dist` | Path to your build output folder relative to project root. |
 | `vpcId` | No | Default VPC | ID of a specific VPC to deploy into. |
 | `domainZone` | No | Auto-derived | Route 53 hosted zone name. Derived from `customDomain` if not set. |

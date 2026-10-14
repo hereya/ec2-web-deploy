@@ -34,6 +34,15 @@ export class HereyaEc2WebDeployStack extends cdk.Stack {
 
     const instanceType: string = process.env["instanceType"] ?? "t3.nano";
 
+    // Major Node.js version installed from NodeSource (setup_<major>.x).
+    // Digits only: the value is interpolated into the instance user data.
+    const nodeVersion: string = process.env["nodeVersion"] || "20";
+    if (!/^[0-9]+$/.test(nodeVersion)) {
+      throw new Error(
+        `nodeVersion must be a Node.js major version made of digits only (e.g. "22"), got "${nodeVersion}"`
+      );
+    }
+
     // Look up the VPC using the parameter value
     const vpc = vpcId
       ? Vpc.fromLookup(this, "MyVpc", {
@@ -131,8 +140,8 @@ export class HereyaEc2WebDeployStack extends cdk.Stack {
       "sudo apt-get install -y gconf-service libasound2 libatk1.0-0 libatk-bridge2.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libnss3 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 fonts-liberation libappindicator1 lsb-release xdg-utils wget libgbm1",
       "sudo apt-get install -y python3 awscli curl gcc g++ make unzip",
 
-      // Install Node.js 20.x
-      "curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -",
+      // Install Node.js <nodeVersion>.x (default 20)
+      `curl -fsSL https://deb.nodesource.com/setup_${nodeVersion}.x | sudo -E bash -`,
       "sudo apt-get install -y nodejs",
 
       // Install PM2 globally
